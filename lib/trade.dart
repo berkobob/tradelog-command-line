@@ -18,8 +18,10 @@ class Trade extends Command {
       'Read a csv file of raw trades and send them to the tradelog';
 
   Trade() {
-    argParser.addOption('filename',
-        abbr: 'f', help: 'The relative path to the csv trade file');
+    argParser
+      ..addOption('filename',
+          abbr: 'f', help: 'The relative path to the csv trade file')
+      ..addFlag('pretty', abbr: 'p', help: 'Pretty flag fromats output');
   }
 
   @override
@@ -30,20 +32,29 @@ class Trade extends Command {
       file = null;
     }
 
-    final trades = await File(file ?? Dir.fileName)
-        .openRead()
-        .transform(utf8.decoder)
-        .map((element) => element.replaceAll('"', ''))
-        .transform(LineSplitter())
-        .map((element) => element.split(','))
-        .transform(MyTransformer())
-        .toList();
+    if (argResults?['pretty']) {
+      await prettyTrade(file ?? Dir.fileName);
+    } else {
+      await trade(file ?? Dir.fileName);
+    }
+  }
 
+  Future<List> load(String fileName) async => await File(fileName)
+      .openRead()
+      .transform(utf8.decoder)
+      .map((element) => element.replaceAll('"', ''))
+      .transform(LineSplitter())
+      .map((element) => element.split(','))
+      .transform(MyTransformer())
+      .toList();
+
+  Future<void> prettyTrade(String fileName) async {
+    final trades = await load(fileName);
     final spinners = MultiSpinner();
     for (var trade in trades) {
       String? msg;
       Json result = {};
-      final gift = spinners.add(Spinner(
+      final spinner = spinners.add(Spinner(
           icon: green('➜'),
           leftPrompt: (done) => '', // prompts are optional
           rightPrompt: (done) => done
@@ -58,8 +69,19 @@ class Trade extends Command {
         msg = null;
       }).onError((error, stackTrace) {
         msg = '$error';
-      }).whenComplete(() => gift.done());
+      }).whenComplete(() => spinner.done());
     }
+  }
+
+  Future<List> trade(String fileName) async {
+    final trades = await load(fileName);
+    final results = [];
+    for (var trade in trades) {
+      final body = json.encode(trade);
+      final res = await post(Url.trades.uri, headers: headers, body: body);
+      results.add(json.decode(res.body));
+    }
+    return results;
   }
 
   String _row(Json trade) => Format().row([

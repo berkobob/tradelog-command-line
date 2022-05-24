@@ -10,9 +10,8 @@
             "type": "dart",
             "program": "bin/tlc.dart",
             "args": [
-                "trade",
-                "-f",
-                "data/2020.11.csv"
+                "get",
+                "foo",
             ]
         }
     ]

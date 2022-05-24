@@ -8,3 +8,9 @@ Check that the Trade Log Server is running
 
 ## Trade
 Sends trades to the Trade Log Server for processing
+
+## Get
++ trades
++ positions
++ stocks
++ portfolios

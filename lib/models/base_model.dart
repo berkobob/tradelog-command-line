@@ -1,4 +1,5 @@
 export 'package:dcli/dcli.dart';
+
 import '../constants.dart';
 export '../constants.dart';
 
@@ -17,18 +18,9 @@ abstract class BaseModel {
         proceeds = json['proceeds'],
         commission = json['commission'],
         cash = json['cash'],
-        risk = json['risk'],
+        risk = json['risk'] == 1234567.89 ? double.infinity : json['risk'],
         quantity = json['quantity'];
 
-  List get row => [
-        portfolio,
-        proceeds.toStringAsFixed(2),
-        commission.toStringAsFixed(2),
-        cash.toStringAsFixed(2),
-        risk.toStringAsFixed(2),
-        quantity.toString().padLeft(10),
-      ];
-
-  String get header => '';
+  String get header;
   Json toJson();
 }

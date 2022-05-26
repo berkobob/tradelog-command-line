@@ -15,3 +15,4 @@ dependencies:
   dcli: ^1.30.2
   http: ^0.13.4
   interact: ^2.1.1
+  intl: ^0.17.0

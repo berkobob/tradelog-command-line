@@ -5,7 +5,6 @@ import 'dart:async';
 import 'package:args/command_runner.dart';
 import 'package:dcli/dcli.dart';
 import 'package:http/http.dart';
-import 'package:interact/interact.dart';
 
 import 'constants.dart';
 import 'dir.dart';
@@ -20,23 +19,76 @@ class Trade extends Command {
   Trade() {
     argParser
       ..addOption('filename',
-          abbr: 'f', help: 'The relative path to the csv trade file')
-      ..addFlag('pretty', abbr: 'p', help: 'Pretty flag fromats output');
+          abbr: 'f',
+          help: 'The relative path to the csv trade file',
+          defaultsTo: '')
+      ..addFlag('wait', abbr: 'w', help: 'Wait for user input between trades');
   }
 
   @override
-  run() async {
-    String? file = argResults?['filename'];
-    if (file != null && !exists(file)) {
+  Future<List> run([String? fileName]) async {
+    String? file = argResults?['filename'] ?? fileName;
+    if (file == null) return [];
+    if (file != '' && !exists(file)) {
       print(yellow('File $file does not exist.'));
-      file = null;
+      return [];
     }
 
-    if (argResults?['pretty']) {
-      await prettyTrade(file ?? Dir.fileName);
-    } else {
-      await trade(file ?? Dir.fileName);
+    final trades = await load(file == '' ? Dir.fileName : file);
+    trades.sort((a, b) =>
+        (int.parse(a['TradeDate'])).compareTo(int.parse(b['TradeDate'])));
+
+    for (Json trade in trades) {
+      final body = json.encode(trade);
+      final res = await post(Url.trades.uri, headers: headers, body: body);
+      final reply = json.decode(res.body) as Json;
+      printJson(reply);
+      if (argResults?['wait'] && trades.indexOf(trade) < trades.length - 1) {
+        confirm('Process next trade', defaultValue: true);
+      }
     }
+
+    return trades;
+  }
+
+  void printJson(dynamic data, {indent = 0}) {
+    data.forEach((key, value) {
+      switch (value.runtimeType) {
+        case DateTime:
+          print('${" " * indent}${yellow(key)}: \t${date.format(value)}');
+          break;
+        case double:
+          print(
+              '${" " * indent}${yellow(key)}: \t${moneyFormat.format(value)}');
+          break;
+        case int:
+          print('${" " * indent}${yellow(key)}: \t$value');
+          break;
+        case (bool):
+          print('${" " * indent}${yellow(key)}: \t'
+              ' ${value ? green('TRUE') : red('FALSE')}');
+          break;
+        case (String):
+          print('${" " * indent}${yellow(key)}: '
+              '${key.toUpperCase() == "DESCRIPTION" ? '' : '\t'}'
+              '${value.contains('ERROR') ? red(value, bold: true) : value}');
+          break;
+        case Null:
+          // print('${" " * indent}${yellow(key)}:');
+          break;
+        case List:
+          print(
+              '${" " * indent}${yellow(key)}:\t${key == 'stocks' ? value : '${value.length}'}');
+          break;
+        default:
+          print(
+              '${" " * indent}${yellow(indent == 0 ? key.toUpperCase() : key)}: {');
+          printJson(value, indent: indent + 3);
+          print('${" " * indent}}');
+          break;
+      }
+    });
+    print('');
   }
 
   Future<List> load(String fileName) async => await File(fileName)
@@ -47,52 +99,6 @@ class Trade extends Command {
       .map((element) => element.split(','))
       .transform(MyTransformer())
       .toList();
-
-  Future<void> prettyTrade(String fileName) async {
-    final trades = await load(fileName);
-    final spinners = MultiSpinner();
-    for (var trade in trades) {
-      String? msg;
-      Json result = {};
-      final spinner = spinners.add(Spinner(
-          icon: green('➜'),
-          leftPrompt: (done) => '', // prompts are optional
-          rightPrompt: (done) => done
-              ? msg == null
-                  ? _row(result)
-                  : msg!
-              : '${trade['Quantity']} ${trade['Description']}'));
-
-      final body = json.encode(trade);
-      post(Url.trades.uri, headers: headers, body: body).then((res) {
-        result = json.decode(res.body);
-        msg = null;
-      }).onError((error, stackTrace) {
-        msg = '$error';
-      }).whenComplete(() => spinner.done());
-    }
-  }
-
-  Future<List> trade(String fileName) async {
-    final trades = await load(fileName);
-    final results = [];
-    for (var trade in trades) {
-      final body = json.encode(trade);
-      final res = await post(Url.trades.uri, headers: headers, body: body);
-      results.add(json.decode(res.body));
-    }
-    return results;
-  }
-
-  String _row(Json trade) => Format().row([
-        trade['msg']['trade']['symbol'],
-        trade['msg']['stock']['stock'],
-        trade['msg']['position']['description']
-      ], widths: [
-        15,
-        15,
-        15
-      ]);
 }
 
 ///

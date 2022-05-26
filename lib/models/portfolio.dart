@@ -13,11 +13,10 @@ class Portfolio extends BaseModel {
   String toString() => Format().row(
       [
         portfolio,
-        proceeds.toStringAsFixed(2),
-        commission.toStringAsFixed(2),
-        cash.toStringAsFixed(2),
-        risk.toStringAsFixed(2),
-        quantity.toString().padLeft(10),
+        moneyFormat.format(proceeds),
+        moneyFormat.format(commission),
+        moneyFormat.format(cash),
+        moneyFormat.format(risk),
         stocks.length.toString().padLeft(10),
         currency
       ],
@@ -29,10 +28,9 @@ class Portfolio extends BaseModel {
         TableAlignment.right,
         TableAlignment.middle,
         TableAlignment.middle,
-        TableAlignment.middle,
       ],
       delimiter: '  |  ',
-      widths: [20, 20, 20, 20, 20, 20, 20, 20]);
+      widths: [20, 20, 20, 20, 20, 20, 20]);
 
   @override
   String get header => Format().row(
@@ -42,7 +40,6 @@ class Portfolio extends BaseModel {
         'COMMISSION',
         'CASH',
         'RISK',
-        '  QUANTITY',
         '    STOCKS',
         'CURRENCY',
       ],
@@ -54,10 +51,9 @@ class Portfolio extends BaseModel {
         TableAlignment.right,
         TableAlignment.middle,
         TableAlignment.middle,
-        TableAlignment.middle,
       ],
       delimiter: '  |  ',
-      widths: [20, 20, 20, 20, 20, 20, 20, 20]);
+      widths: [20, 20, 20, 20, 20, 20, 20]);
 
   @override
   Json toJson() => {

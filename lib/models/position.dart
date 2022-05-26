@@ -26,14 +26,15 @@ class Position extends BaseModel {
       [
         portfolio,
         stock,
-        symbol,
-        proceeds.toStringAsFixed(2),
-        commission.toStringAsFixed(2),
-        cash.toStringAsFixed(2),
-        risk.toStringAsFixed(2),
+        description,
+        moneyFormat.format(proceeds), //.toStringAsFixed(2),
+        moneyFormat.format(commission), //.toStringAsFixed(2),
+        moneyFormat.format(cash), //.toStringAsFixed(2),
+        moneyFormat.format(risk), //.toStringAsFixed(2),
         quantity.toString().padLeft(10),
         open.toString(),
         closed?.toString() ?? '',
+        days?.toString() ?? '',
         trades.length.toString()
       ],
       alignments: [
@@ -48,24 +49,26 @@ class Position extends BaseModel {
         TableAlignment.right,
         TableAlignment.right,
         TableAlignment.right,
+        TableAlignment.right,
       ],
       delimiter: '  |  ',
-      widths: [20, 20, 20, 20, 20, 20, 20, 10, 10, 10, 10]);
+      widths: [10, 10, 20, 20, 20, 20, 20, 10, 10, 10, 10, 10]);
 
   @override
   String get header => Format().row(
       [
         'PORT',
         'STOCK',
-        'SYMBOL',
+        'DESCRIPTION',
         'PROCEEDS',
         'COMMISSION',
         'CASH',
         'RISK',
         '  QUANTITY',
-        '    OPEN',
-        'CLOSED',
+        '   OPEN',
+        '   CLOSED',
         'DAYS',
+        '#TRADES'
       ],
       alignments: [
         TableAlignment.left,
@@ -79,9 +82,10 @@ class Position extends BaseModel {
         TableAlignment.left,
         TableAlignment.left,
         TableAlignment.right,
+        TableAlignment.right,
       ],
       delimiter: '  |  ',
-      widths: [20, 20, 20, 20, 20, 20, 20, 10, 10, 10, 10]);
+      widths: [10, 10, 20, 20, 20, 20, 20, 10, 10, 10, 10, 10]);
 
   @override
   Json toJson() => {

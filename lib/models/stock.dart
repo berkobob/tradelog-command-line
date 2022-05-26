@@ -18,10 +18,10 @@ class Stock extends BaseModel {
       [
         portfolio,
         stock,
-        proceeds.toStringAsFixed(2),
-        commission.toStringAsFixed(2),
-        cash.toStringAsFixed(2),
-        risk.toStringAsFixed(2),
+        moneyFormat.format(proceeds),
+        moneyFormat.format(commission),
+        moneyFormat.format(cash),
+        moneyFormat.format(risk),
         quantity.toString().padLeft(10),
         open.length.toString().padLeft(10),
         closed.length.toString().padLeft(10)

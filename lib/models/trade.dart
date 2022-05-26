@@ -43,19 +43,21 @@ class Trade extends BaseModel {
         date.toString(),
         bos,
         asset.padLeft(4),
+        stock,
         symbol,
         quantity.toString(),
         strike?.toStringAsFixed(2) ?? '',
         expiry?.toString() ?? '',
         poc?.padLeft(2),
-        price.toStringAsFixed(2),
+        price.toStringAsFixed(price < 10 ? 4 : 2),
         proceeds.toStringAsFixed(2),
         commission.toStringAsFixed(2),
         cash.toStringAsFixed(2),
-        risk.toStringAsFixed(2),
+        moneyFormat.format(risk),
         multiplier.toString(),
       ],
       alignments: [
+        TableAlignment.left,
         TableAlignment.left,
         TableAlignment.left,
         TableAlignment.left,
@@ -72,7 +74,7 @@ class Trade extends BaseModel {
         TableAlignment.right,
       ],
       delimiter: '  |  ',
-      widths: [10, 5, 5, 20, 5, 10, 10, 5, 10, 10, 10, 10, 10, 5]);
+      widths: [10, 5, 5, 10, 20, 5, 10, 10, 5, 10, 10, 10, 10, 10, 5]);
 
   @override
   String get header => Format().row(
@@ -80,6 +82,7 @@ class Trade extends BaseModel {
         'DATE',
         'BOS',
         'ASSET',
+        'STOCK',
         'SYMBOL',
         'QTY',
         'STRIKE',
@@ -97,6 +100,7 @@ class Trade extends BaseModel {
         TableAlignment.left,
         TableAlignment.left,
         TableAlignment.left,
+        TableAlignment.left,
         TableAlignment.right,
         TableAlignment.right,
         TableAlignment.left,
@@ -109,8 +113,9 @@ class Trade extends BaseModel {
         TableAlignment.right
       ],
       delimiter: '  |  ',
-      widths: [10, 5, 5, 20, 5, 10, 10, 5, 10, 10, 10, 10, 10, 5]);
+      widths: [10, 5, 5, 10, 20, 5, 10, 10, 5, 10, 10, 10, 10, 10, 5]);
 
+  @override
   Json toJson() => {
         '_id': id,
         'date': date.toString(),

@@ -29,6 +29,7 @@ class Get extends Command {
       JsonEncoder encoder = JsonEncoder.withIndent(('  '));
       data?.forEach((e) => print(encoder.convert(e.toJson())));
     } else {
+      if (data?[0] == null) return;
       final header = (data?[0] as BaseModel);
       print(header.header);
       data?.forEach((element) {

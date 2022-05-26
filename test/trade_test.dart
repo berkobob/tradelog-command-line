@@ -4,7 +4,7 @@ import 'package:tlc/trade.dart';
 
 main() {
   test('Expect a list of processed trades', () async {
-    final result = await Trade().trade('data/test1.csv');
+    final result = await Trade().run('data/test1.csv');
     expect(result, isA<List>());
   });
 }

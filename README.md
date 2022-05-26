@@ -14,3 +14,4 @@ Sends trades to the Trade Log Server for processing
 + positions
 + stocks
 + portfolios
++ get [trades | positions | stocks | portfolios]

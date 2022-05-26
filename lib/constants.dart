@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 const root = 'http://localhost';
 const port = '8888';
 const headers = {'Content-Type': 'application/json'};
@@ -27,3 +29,7 @@ final urls = <String, Uri>{
   Url.stocks.name: Url.stocks.uri,
   Url.portfolios.name: Url.portfolios.uri,
 };
+
+final DateFormat date = DateFormat('dd/MM/yyyy');
+
+final moneyFormat = NumberFormat.currency(customPattern: "#,##0.00");

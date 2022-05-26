@@ -10,8 +10,9 @@
             "type": "dart",
             "program": "bin/tlc.dart",
             "args": [
-                "get",
-                "foo",
+                "trade",
+                "-f",
+                "data/test1.csv"
             ]
         }
     ]

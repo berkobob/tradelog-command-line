@@ -10,9 +10,12 @@
             "type": "dart",
             "program": "bin/tlc.dart",
             "args": [
-                "trade",
-                "-f",
-                "data/test1.csv"
+                "get",
+                "trades",
+                "-q", "stock=poo",
+                "-p"
+                // "-q", "pigs=true",
+                // "-q", "quantity=100"
             ]
         }
     ]

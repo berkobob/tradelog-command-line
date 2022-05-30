@@ -1,3 +1,4 @@
+import 'package:dcli/dcli.dart';
 import 'package:intl/intl.dart';
 
 const root = 'http://localhost';
@@ -18,11 +19,13 @@ enum Url {
   Uri get uri => Uri.parse('$root:$port/$name');
 
   List get all => Url.values.map((x) => {x.name: x.uri}).toList();
+
+  Uri url(String query) => Uri.parse('$root:$port/$name$query');
 }
 
 typedef Json = Map<String, dynamic>;
 
-final urls = <String, Uri>{
+final uris = <String, Uri>{
   Url.home.name: Url.home.uri,
   Url.trades.name: Url.trades.uri,
   Url.positions.name: Url.positions.uri,
@@ -30,6 +33,57 @@ final urls = <String, Uri>{
   Url.portfolios.name: Url.portfolios.uri,
 };
 
+final urls = <String, Url>{
+  Url.home.name: Url.home,
+  Url.trades.name: Url.trades,
+  Url.positions.name: Url.positions,
+  Url.stocks.name: Url.stocks,
+  Url.portfolios.name: Url.portfolios,
+};
+
 final DateFormat date = DateFormat('dd/MM/yyyy');
 
 final moneyFormat = NumberFormat.currency(customPattern: "#,##0.00");
+
+void printJson(Json data, {indent = 0}) {
+  data.forEach((key, value) {
+    String tabs = key.length < 12
+        ? key.length < 8
+            ? '\t\t'
+            : '\t'
+        : '';
+
+    switch (value.runtimeType) {
+      case DateTime:
+        print('${" " * indent}${yellow(key)}: $tabs${date.format(value)}');
+        break;
+      case double:
+        print('${" " * indent}${yellow(key)}: '
+            '$tabs${moneyFormat.format(value)}');
+        break;
+      case int:
+        print('${" " * indent}${yellow(key)}: $tabs$value');
+        break;
+      case (bool):
+        print('${" " * indent}${yellow(key)}: $tabs'
+            ' ${value ? green('TRUE') : red('FALSE')}');
+        break;
+      case (String):
+        print('${" " * indent}${yellow(key)}: $tabs'
+            '${value.contains('ERROR') ? red(value, bold: true) : value}');
+        break;
+      case Null:
+        // print('${" " * indent}${yellow(key)}:');
+        break;
+      case List:
+        print('${" " * indent}${yellow(key)}:$tabs${key == 'stocks'
+            '' ? value : '${value.length}'}');
+        break;
+      default:
+        print('${" " * indent}${yellow(key)}: {');
+        printJson(value, indent: indent + 3);
+        print('${" " * indent}}');
+        break;
+    }
+  });
+}

@@ -18,23 +18,34 @@ class Get extends Command {
       ..addCommand('positions')
       ..addCommand('stocks')
       ..addCommand('portfolios')
-      ..addFlag('pretty', abbr: 'p', help: 'Pretty flag fromats output');
+      ..addFlag('pretty', abbr: 'p', help: 'Pretty flag fromats output')
+      ..addMultiOption('query',
+          abbr: 'q',
+          help: 'Constrain your search'
+              'with criteria e.g. stock=APPL',
+          defaultsTo: ['missing']);
   }
 
   @override
   void run() async {
     final data = await fetch(argResults?.command?.name);
+    if (data == null || data.isEmpty) {
+      echo(yellow('Your search'), newline: false);
+      echo(white(' "${argResults?.arguments.join(' ')}" '), newline: false);
+      print(yellow('did not retrieve any resutls.'));
+      return;
+    }
 
     if (argResults?['pretty']) {
       JsonEncoder encoder = JsonEncoder.withIndent(('  '));
-      data?.forEach((e) => print(encoder.convert(e.toJson())));
+      for (var e in data) {
+        print(encoder.convert(e.toJson()));
+      }
     } else {
-      if (data?[0] == null) return;
-      final header = (data?[0] as BaseModel);
-      print(header.header);
-      data?.forEach((element) {
-        print(element.toString());
-      });
+      print(data[0].header);
+      for (var e in data) {
+        print('$e');
+      }
     }
   }
 
@@ -45,17 +56,15 @@ class Get extends Command {
       return null;
     }
 
-    final response = await get(urls[cmd]!, headers: headers);
+    String query = argResults?['query'].join('&');
+    final url = query == '' ? urls[cmd]!.uri : urls[cmd]!.url('?$query');
+    final response = await get(url, headers: headers);
     if (response.statusCode != 200) {
       print(response.reasonPhrase);
       return null;
     }
 
     final data = json.decode(response.body);
-    if (!data['ok']) {
-      print(data['msg']);
-      return null;
-    }
 
     switch (cmd) {
       case 'portfolios':

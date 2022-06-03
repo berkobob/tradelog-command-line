@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:args/command_runner.dart';
 import 'package:http/http.dart';
 import 'package:tlc/models/base_model.dart';
+import 'package:tlc/models/dividend.dart';
 
 import 'models/models.dart';
 
@@ -18,12 +19,12 @@ class Get extends Command {
       ..addCommand('positions')
       ..addCommand('stocks')
       ..addCommand('portfolios')
+      ..addCommand('dividends')
       ..addFlag('pretty', abbr: 'p', help: 'Pretty flag fromats output')
       ..addMultiOption('query',
           abbr: 'q',
           help: 'Constrain your search'
-              'with criteria e.g. stock=APPL',
-          defaultsTo: ['missing']);
+              'with criteria e.g. stock=APPL');
   }
 
   @override
@@ -32,7 +33,7 @@ class Get extends Command {
     if (data == null || data.isEmpty) {
       echo(yellow('Your search'), newline: false);
       echo(white(' "${argResults?.arguments.join(' ')}" '), newline: false);
-      print(yellow('did not retrieve any resutls.'));
+      print(yellow('did not retrieve any ${argResults?.command?.name}.'));
       return;
     }
 
@@ -68,13 +69,21 @@ class Get extends Command {
 
     switch (cmd) {
       case 'portfolios':
-        return data['msg'].map<BaseModel>((port) => Portfolio(port)).toList();
+        return data['portfolios']
+            .map<BaseModel>((port) => Portfolio(port))
+            .toList();
       case 'positions':
-        return data['msg'].map<BaseModel>((posn) => Position(posn)).toList();
+        return data['positions']
+            .map<BaseModel>((posn) => Position(posn))
+            .toList();
       case 'stocks':
-        return data['msg'].map<BaseModel>((stock) => Stock(stock)).toList();
+        return data['stocks'].map<BaseModel>((stock) => Stock(stock)).toList();
       case 'trades':
-        return data['msg'].map<BaseModel>((trade) => Trade(trade)).toList();
+        return data['trades'].map<BaseModel>((trade) => Trade(trade)).toList();
+      case 'dividends':
+        return data['dividends']
+            .map<BaseModel>((divi) => Dividend(divi))
+            .toList();
       default:
         return null;
     }

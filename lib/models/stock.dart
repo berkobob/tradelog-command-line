@@ -5,12 +5,16 @@ class Stock extends BaseModel {
   List<dynamic> open = [];
   List<dynamic> closed = [];
   String? currency;
+  num profit;
+  num dividends;
 
   Stock(Json json)
       : stock = json['stock'],
         open = json['open'],
         closed = json['closed'],
         currency = json['currency'],
+        profit = json['profit'],
+        dividends = json['dividends'],
         super(json);
 
   @override
@@ -24,7 +28,9 @@ class Stock extends BaseModel {
         moneyFormat.format(risk),
         quantity.toString().padLeft(10),
         open.length.toString().padLeft(10),
-        closed.length.toString().padLeft(10)
+        closed.length.toString().padLeft(10),
+        moneyFormat.format(profit),
+        moneyFormat.format(dividends),
       ],
       alignments: [
         TableAlignment.left,
@@ -36,9 +42,11 @@ class Stock extends BaseModel {
         TableAlignment.right,
         TableAlignment.right,
         TableAlignment.right,
+        TableAlignment.right,
+        TableAlignment.right,
       ],
       delimiter: '  |  ',
-      widths: [20, 20, 20, 20, 20, 20, 10, 10, 10]);
+      widths: [20, 20, 20, 20, 20, 20, 10, 10, 10, 10, 10]);
 
   @override
   String get header => Format().row(
@@ -52,6 +60,8 @@ class Stock extends BaseModel {
         '  QUANTITY',
         '    OPEN',
         'CLOSED',
+        'PROFIT',
+        'DIVIDENDS',
       ],
       alignments: [
         TableAlignment.left,
@@ -63,9 +73,11 @@ class Stock extends BaseModel {
         TableAlignment.right,
         TableAlignment.right,
         TableAlignment.right,
+        TableAlignment.right,
+        TableAlignment.right,
       ],
       delimiter: '  |  ',
-      widths: [20, 20, 20, 20, 20, 20, 10, 10, 10]);
+      widths: [20, 20, 20, 20, 20, 20, 10, 10, 10, 10, 10]);
 
   @override
   Json toJson() => {
@@ -79,6 +91,8 @@ class Stock extends BaseModel {
         'cash': cash,
         'risk': risk,
         'currency': currency,
-        'quantity': quantity
+        'quantity': quantity,
+        'profit': profit,
+        'dividends': dividends,
       };
 }

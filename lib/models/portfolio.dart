@@ -3,10 +3,12 @@ import 'package:tlc/models/base_model.dart';
 class Portfolio extends BaseModel {
   Set<dynamic> stocks = {};
   String? currency;
+  num profit;
 
   Portfolio(Json json)
       : stocks = json['stocks'].toSet(),
         currency = json['currency'],
+        profit = json['profit'],
         super(json);
 
   @override
@@ -17,8 +19,9 @@ class Portfolio extends BaseModel {
         moneyFormat.format(commission),
         moneyFormat.format(cash),
         moneyFormat.format(risk),
-        stocks.length.toString().padLeft(10),
-        currency
+        stocks.length.toString().padLeft(15),
+        moneyFormat.format(profit),
+        currency,
       ],
       alignments: [
         TableAlignment.left,
@@ -26,11 +29,12 @@ class Portfolio extends BaseModel {
         TableAlignment.right,
         TableAlignment.right,
         TableAlignment.right,
-        TableAlignment.middle,
+        TableAlignment.right,
+        TableAlignment.right,
         TableAlignment.middle,
       ],
       delimiter: '  |  ',
-      widths: [20, 20, 20, 20, 20, 20, 20]);
+      widths: [15, 15, 15, 15, 15, 15, 15, 15]);
 
   @override
   String get header => Format().row(
@@ -41,6 +45,7 @@ class Portfolio extends BaseModel {
         'CASH',
         'RISK',
         '    STOCKS',
+        'PROFIT',
         'CURRENCY',
       ],
       alignments: [
@@ -49,11 +54,12 @@ class Portfolio extends BaseModel {
         TableAlignment.right,
         TableAlignment.right,
         TableAlignment.right,
-        TableAlignment.middle,
+        TableAlignment.right,
+        TableAlignment.right,
         TableAlignment.middle,
       ],
       delimiter: '  |  ',
-      widths: [20, 20, 20, 20, 20, 20, 20]);
+      widths: [15, 15, 15, 15, 15, 15, 15, 15]);
 
   @override
   Json toJson() => {
@@ -65,6 +71,7 @@ class Portfolio extends BaseModel {
         'cash': cash,
         'risk': risk,
         'currency': currency,
-        'quantity': quantity
+        'quantity': quantity,
+        'profit': profit,
       };
 }

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:async';
 
 import 'package:args/command_runner.dart';
@@ -46,35 +45,9 @@ class Trade extends Command {
       if (argResults?['wait'] != null &&
           argResults!['wait'] &&
           trades.indexOf(trade) < trades.length - 1) {
-        confirm('Process next trade', defaultValue: true);
+        confirm('Process next trade...', defaultValue: true);
       }
     }
     return trades;
-  }
-
-  Future<List> load(String fileName) async => await File(fileName)
-      .openRead()
-      .transform(utf8.decoder)
-      .map((element) => element.replaceAll('"', ''))
-      .transform(LineSplitter())
-      .map((element) => element.split(','))
-      .transform(MyTransformer())
-      .toList();
-}
-
-///
-/// A stream transformer to convert a list of comma separated fields to a map
-///
-class MyTransformer extends StreamTransformerBase<List<String>, Json> {
-  @override
-  Stream<Json> bind(Stream<List<String>> stream) async* {
-    var header = <String>[];
-    await for (var row in stream) {
-      if (header.isEmpty) {
-        header = row;
-      } else {
-        yield Json.fromIterables(header, row);
-      }
-    }
   }
 }

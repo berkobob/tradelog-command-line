@@ -1,4 +1,9 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:dcli/dcli.dart';
+import 'package:interact/interact.dart';
 import 'package:intl/intl.dart';
 
 const root = 'http://localhost';
@@ -10,7 +15,8 @@ enum Url {
   trades('trades'),
   positions('positions'),
   stocks('stocks'),
-  portfolios('portfolios');
+  portfolios('portfolios'),
+  dividends('dividends');
 
   const Url(this.name);
 
@@ -31,6 +37,7 @@ final uris = <String, Uri>{
   Url.positions.name: Url.positions.uri,
   Url.stocks.name: Url.stocks.uri,
   Url.portfolios.name: Url.portfolios.uri,
+  Url.dividends.name: Url.dividends.uri,
 };
 
 final urls = <String, Url>{
@@ -39,6 +46,7 @@ final urls = <String, Url>{
   Url.positions.name: Url.positions,
   Url.stocks.name: Url.stocks,
   Url.portfolios.name: Url.portfolios,
+  Url.dividends.name: Url.dividends,
 };
 
 final DateFormat date = DateFormat('dd/MM/yyyy');
@@ -76,8 +84,9 @@ void printJson(Json data, {indent = 0}) {
         // print('${" " * indent}${yellow(key)}:');
         break;
       case List:
-        print('${" " * indent}${yellow(key)}:$tabs${key == 'stocks'
-            '' ? value : '${value.length}'}');
+        print('${" " * indent}${yellow(key)}:$tabs$value');
+        // print('${" " * indent}${yellow(key)}:$tabs${key == 'stocks'
+        //     '' ? value : '${value.length}'}');
         break;
       default:
         print('${" " * indent}${yellow(key)}: {');
@@ -86,4 +95,40 @@ void printJson(Json data, {indent = 0}) {
         break;
     }
   });
+}
+
+///
+/// A stream transformer to convert a list of comma separated fields to a map
+///
+class MyTransformer extends StreamTransformerBase<List<String>, Json> {
+  @override
+  Stream<Json> bind(Stream<List<String>> stream) async* {
+    var header = <String>[];
+    await for (var row in stream) {
+      if (header.isEmpty) {
+        header = row;
+      } else {
+        yield Json.fromIterables(header, row);
+      }
+    }
+  }
+}
+
+Future<List> load(String fileName) async => await File(fileName)
+    .openRead()
+    .transform(utf8.decoder)
+    .map((element) => element.replaceAll('"', ''))
+    .transform(LineSplitter())
+    .map((element) => element.split(','))
+    .transform(MyTransformer())
+    .toList();
+
+List checkPortfolio(List items) {
+  if (items[0].keys.contains('portfolio')) return items;
+  final port = Input(prompt: 'Portfolio name missing.').interact();
+  for (var item in items) {
+    item['Portfolio'] = port;
+  }
+  print(items);
+  return items;
 }

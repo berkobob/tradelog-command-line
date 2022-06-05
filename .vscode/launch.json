@@ -11,9 +11,9 @@
             "program": "bin/tlc.dart",
             "args": [
                 "get",
-                "stocks",
-                // "-q", "stock=poo",
-                "-p"
+                "positions",
+                // "-q", "stock=NG.",
+                // "-p"
                 // "-q", "pigs=true",
                 // "-q", "quantity=100"
             ]

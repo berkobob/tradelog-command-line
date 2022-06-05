@@ -29,7 +29,8 @@ class Get extends Command {
 
   @override
   void run() async {
-    final data = await fetch(argResults?.command?.name);
+    final data = await fetch(argResults?.command?.name)
+      ?..sort();
     if (data == null || data.isEmpty) {
       echo(yellow('Your search'), newline: false);
       echo(white(' "${argResults?.arguments.join(' ')}" '), newline: false);
@@ -77,7 +78,8 @@ class Get extends Command {
             .map<BaseModel>((posn) => Position(posn))
             .toList();
       case 'stocks':
-        return data['stocks'].map<BaseModel>((stock) => Stock(stock)).toList();
+        return data['stocks'].map<BaseModel>((stock) => Stock(stock)).toList()
+          ..sort();
       case 'trades':
         return data['trades'].map<BaseModel>((trade) => Trade(trade)).toList();
       case 'dividends':

@@ -124,7 +124,7 @@ Future<List> load(String fileName) async => await File(fileName)
     .toList();
 
 List checkPortfolio(List items) {
-  if (items[0].keys.contains('portfolio')) return items;
+  if (items[0].keys.contains('Portfolio')) return items;
   final port = Input(prompt: 'Portfolio name missing.').interact();
   for (var item in items) {
     item['Portfolio'] = port;

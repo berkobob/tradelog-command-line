@@ -11,59 +11,31 @@ class Portfolio extends BaseModel {
         profit = json['profit'],
         super(json);
 
-  @override
-  String toString() => Format().row(
-      [
-        portfolio,
-        moneyFormat.format(proceeds),
-        moneyFormat.format(commission),
-        moneyFormat.format(cash),
-        moneyFormat.format(risk),
-        stocks.length.toString().padLeft(15),
-        moneyFormat.format(profit),
-        currency,
-      ],
-      alignments: [
-        TableAlignment.left,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.middle,
-      ],
-      delimiter: '  |  ',
-      widths: [15, 15, 15, 15, 15, 15, 15, 15]);
+  // @override
+  // String toString() => '${portfolio.padLeft(12)}\t'
+  //     '${moneyFormat.format(proceeds).padLeft(12)}\t'
+  //     '${moneyFormat.format(commission).padLeft(12)}\t'
+  //     '${moneyFormat.format(cash).padLeft(12)}\t'
+  //     '${moneyFormat.format(risk).padLeft(12)}\t'
+  //     '${stocks.length.toString().padLeft(12)}\t'
+  //     '${moneyFormat.format(profit).padLeft(12)}\t'
+  //     '${currency?.padLeft(12) ?? ""}\t';
 
-  @override
-  String get header => Format().row(
-      [
-        'PORT',
-        'PROCEEDS',
-        'COMMISSION',
-        'CASH',
-        'RISK',
-        '    STOCKS',
-        'PROFIT',
-        'CURRENCY',
-      ],
-      alignments: [
-        TableAlignment.left,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.middle,
-      ],
-      delimiter: '  |  ',
-      widths: [15, 15, 15, 15, 15, 15, 15, 15]);
+  // @override
+  // String get header => black(
+  //     '${'PORT'.padLeft(12)}\t'
+  //     '${'PROCEEDS'.padLeft(12)}\t'
+  //     '${'COMMISSION'.padLeft(12)}\t'
+  //     '${'CASH'.padLeft(12)}\t'
+  //     '${'RISK'.padLeft(12)}\t'
+  //     '${'STOCKS'.padLeft(12)}\t'
+  //     '${' PROFIT'.padLeft(12)}\t'
+  //     '${' CURRENCY'.padLeft(12)}',
+  //     background: AnsiColor.white);
 
   @override
   Json toJson() => {
-        '_id': id,
+        'id': id,
         'portfolio': portfolio,
         'stocks': stocks.toList(),
         'proceeds': proceeds,
@@ -74,4 +46,8 @@ class Portfolio extends BaseModel {
         'quantity': quantity,
         'profit': profit,
       };
+
+  @override
+  int compareTo(BaseModel other) =>
+      portfolio.compareTo((other as Portfolio).portfolio);
 }

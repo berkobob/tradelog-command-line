@@ -38,86 +38,8 @@ class Trade extends BaseModel {
         super(json);
 
   @override
-  String toString() => Format().row(
-      [
-        date.toString(),
-        bos,
-        asset.padLeft(4),
-        stock,
-        symbol,
-        quantity.toString(),
-        strike?.toStringAsFixed(2) ?? '',
-        expiry?.toString() ?? '',
-        poc?.padLeft(2),
-        price.toStringAsFixed(price < 10 ? 4 : 2),
-        proceeds.toStringAsFixed(2),
-        commission.toStringAsFixed(2),
-        cash.toStringAsFixed(2),
-        moneyFormat.format(risk),
-        multiplier.toString(),
-      ],
-      alignments: [
-        TableAlignment.left,
-        TableAlignment.left,
-        TableAlignment.left,
-        TableAlignment.left,
-        TableAlignment.left,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.left,
-        TableAlignment.left,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-      ],
-      delimiter: '  |  ',
-      widths: [10, 5, 5, 10, 20, 5, 10, 10, 5, 10, 10, 10, 10, 10, 5]);
-
-  @override
-  String get header => Format().row(
-      [
-        'DATE',
-        'BOS',
-        'ASSET',
-        'STOCK',
-        'SYMBOL',
-        'QTY',
-        'STRIKE',
-        'EXPIRY',
-        'POC',
-        'PRICE',
-        'PROCEEDS',
-        'COMMISSION',
-        'CASH',
-        'RISK',
-        'MULT',
-      ],
-      alignments: [
-        TableAlignment.left,
-        TableAlignment.left,
-        TableAlignment.left,
-        TableAlignment.left,
-        TableAlignment.left,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.left,
-        TableAlignment.left,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right
-      ],
-      delimiter: '  |  ',
-      widths: [10, 5, 5, 10, 20, 5, 10, 10, 5, 10, 10, 10, 10, 10, 5]);
-
-  @override
   Json toJson() => {
-        '_id': id,
+        'id': id,
         'date': date.toString(),
         'bos': bos,
         'quantity': quantity,
@@ -141,4 +63,7 @@ class Trade extends BaseModel {
         'description': description,
         'risk': risk
       };
+
+  @override
+  int compareTo(BaseModel other) => date.compareTo((other as Trade).date);
 }

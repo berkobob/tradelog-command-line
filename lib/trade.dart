@@ -33,9 +33,10 @@ class Trade extends Command {
       return [];
     }
 
-    final trades = await load(file == '' ? Dir.fileName : file);
-    trades.sort((a, b) =>
+    final data = await load(file == '' ? Dir.fileName : file);
+    data.sort((a, b) =>
         (int.parse(a['TradeDate'])).compareTo(int.parse(b['TradeDate'])));
+    final trades = checkPortfolio(data);
 
     for (Json trade in trades) {
       final body = json.encode(trade);

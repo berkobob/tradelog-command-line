@@ -18,68 +18,6 @@ class Stock extends BaseModel {
         super(json);
 
   @override
-  String toString() => Format().row(
-      [
-        portfolio,
-        stock,
-        moneyFormat.format(proceeds),
-        moneyFormat.format(commission),
-        moneyFormat.format(cash),
-        moneyFormat.format(risk),
-        quantity.toString().padLeft(10),
-        open.length.toString().padLeft(10),
-        closed.length.toString().padLeft(10),
-        moneyFormat.format(profit),
-        moneyFormat.format(dividends),
-      ],
-      alignments: [
-        TableAlignment.left,
-        TableAlignment.left,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-      ],
-      delimiter: '  |  ',
-      widths: [20, 20, 20, 20, 20, 20, 10, 10, 10, 10, 10]);
-
-  @override
-  String get header => Format().row(
-      [
-        'PORT',
-        'STOCK',
-        'PROCEEDS',
-        'COMMISSION',
-        'CASH',
-        'RISK',
-        '  QUANTITY',
-        '    OPEN',
-        'CLOSED',
-        'PROFIT',
-        'DIVIDENDS',
-      ],
-      alignments: [
-        TableAlignment.left,
-        TableAlignment.left,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-        TableAlignment.right,
-      ],
-      delimiter: '  |  ',
-      widths: [20, 20, 20, 20, 20, 20, 10, 10, 10, 10, 10]);
-
-  @override
   Json toJson() => {
         '_id': id,
         'portfolio': portfolio,
@@ -95,4 +33,7 @@ class Stock extends BaseModel {
         'profit': profit,
         'dividends': dividends,
       };
+
+  @override
+  int compareTo(BaseModel other) => stock.compareTo((other as Stock).stock);
 }

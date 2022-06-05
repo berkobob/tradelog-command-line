@@ -20,7 +20,8 @@ class Dividend extends Command {
           help: 'The relative path the csv dividend file',
           defaultsTo: '')
       ..addFlag('wait',
-          abbr: 'w', help: 'Wait for the user input between dividends');
+          abbr: 'w', help: 'Wait for the user input between dividends')
+      ..addFlag('quiet', abbr: 'q', help: 'Only display success. No details');
   }
 
   @override
@@ -39,7 +40,9 @@ class Dividend extends Command {
       final body = json.encode(divi);
       final res = await post(Url.dividends.uri, headers: headers, body: body);
       final reply = json.decode(res.body) as Json;
-      printJson(reply);
+      argResults?['quiet']
+          ? print('Success: ${reply['ok'] ? green('YES') : red('FAIL')}')
+          : printJson(reply);
       if (argResults?['wait'] != null &&
           argResults?['wait'] &&
           divis.indexOf(divi) < divis.length - 1) {

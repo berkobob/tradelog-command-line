@@ -67,12 +67,17 @@ abstract class BaseModel with Comparable<BaseModel> {
 
     if (value is List) return pad ? 10 : value.length.toString().padLeft(10);
 
-    if (value is double)
-      return pad
-          ? 12
-          : value >= 0
-              ? white(moneyFormat.format(value).padLeft(12), bold: true)
-              : red(moneyFormat.format(value).padLeft(12));
+    if (value is double) {
+      if (pad) return 12;
+      if (value == 0.0 || value == -0.0) return '    '.padLeft(12);
+      if (value < 0) red(moneyFormat.format(value).padLeft(12));
+      return white(moneyFormat.format(value).padLeft(12), bold: true);
+    }
+    // return pad
+    //     ? 12
+    //     : value >= 0
+    //         ? white(moneyFormat.format(value).padLeft(12), bold: true)
+    //         : red(moneyFormat.format(value).padLeft(12));
 
     if (value.contains('00:00:00.000Z'))
       return pad

@@ -21,7 +21,8 @@ class Trade extends Command {
           abbr: 'f',
           help: 'The relative path to the csv trade file',
           defaultsTo: '')
-      ..addFlag('wait', abbr: 'w', help: 'Wait for user input between trades');
+      ..addFlag('wait', abbr: 'w', help: 'Wait for user input between trades')
+      ..addFlag('quiet', abbr: 'q', help: 'Only display success. No details');
   }
 
   @override
@@ -42,7 +43,9 @@ class Trade extends Command {
       final body = json.encode(trade);
       final res = await post(Url.trades.uri, headers: headers, body: body);
       final reply = json.decode(res.body) as Json;
-      printJson(reply);
+      argResults?['quiet']
+          ? print('Success: ${reply['ok'] ? green('YES') : red('FAIL')}')
+          : printJson(reply);
       if (argResults?['wait'] != null &&
           argResults!['wait'] &&
           trades.indexOf(trade) < trades.length - 1) {

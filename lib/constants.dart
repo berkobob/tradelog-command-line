@@ -54,12 +54,16 @@ final DateFormat date = DateFormat('dd/MM/yyyy');
 final moneyFormat = NumberFormat.currency(customPattern: "#,##0.00");
 
 void printJson(Json data, {indent = 0}) {
+  if (indent == 0) {
+    print('{');
+    indent = 2;
+  }
   data.forEach((key, value) {
-    String tabs = key.length < 12
-        ? key.length < 8
+    String tabs = key.length < 11
+        ? key.length < 4
             ? '\t\t'
             : '\t'
-        : '';
+        : '\t';
 
     switch (value.runtimeType) {
       case DateTime:
@@ -81,12 +85,11 @@ void printJson(Json data, {indent = 0}) {
             '${value.contains('ERROR') ? red(value, bold: true) : value}');
         break;
       case Null:
-        // print('${" " * indent}${yellow(key)}:');
+        print('${" " * indent}${yellow(key)}:');
         break;
       case List:
-        print('${" " * indent}${yellow(key)}:$tabs$value');
-        // print('${" " * indent}${yellow(key)}:$tabs${key == 'stocks'
-        //     '' ? value : '${value.length}'}');
+        // print('${" " * indent}${yellow(key)}:$tabs$value');
+        print('${" " * indent}${yellow(key)}: $tabs${'${value.length}'}');
         break;
       default:
         print('${" " * indent}${yellow(key)}: {');
@@ -95,6 +98,7 @@ void printJson(Json data, {indent = 0}) {
         break;
     }
   });
+  print('}');
 }
 
 ///
@@ -123,12 +127,11 @@ Future<List> load(String fileName) async => await File(fileName)
     .transform(MyTransformer())
     .toList();
 
-List checkPortfolio(List items) {
+List checkPortfolio(List items, [String? name]) {
   if (items[0].keys.contains('Portfolio')) return items;
-  final port = Input(prompt: 'Portfolio name missing.').interact();
+  final port = name ?? Input(prompt: 'Portfolio name missing.').interact();
   for (var item in items) {
     item['Portfolio'] = port;
   }
-  print(items);
   return items;
 }

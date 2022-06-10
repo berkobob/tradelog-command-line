@@ -1,12 +1,11 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
+import 'package:dcli/dcli.dart';
 export 'package:dcli/dcli.dart';
 
-import 'package:dcli/dcli.dart';
-
-import '../constants.dart';
 import 'position.dart';
 import 'trade.dart';
+import '../constants.dart';
 export '../constants.dart';
 
 abstract class BaseModel with Comparable<BaseModel> {
@@ -16,7 +15,7 @@ abstract class BaseModel with Comparable<BaseModel> {
   double commission;
   double cash;
   double risk;
-  int quantity = 0;
+  num quantity = 0;
 
   BaseModel(Json json)
       : id = json['_id'],
@@ -24,7 +23,7 @@ abstract class BaseModel with Comparable<BaseModel> {
         proceeds = json['proceeds'],
         commission = json['commission'],
         cash = json['cash'],
-        risk = json['risk'] == 1234567.89 ? double.infinity : json['risk'],
+        risk = json['risk'],
         quantity = json['quantity'];
 
   Json toJson();
@@ -69,20 +68,15 @@ abstract class BaseModel with Comparable<BaseModel> {
 
     if (value is double) {
       if (pad) return 12;
-      if (value == 0.0 || value == -0.0) return '    '.padLeft(12);
-      if (value < 0) red(moneyFormat.format(value).padLeft(12));
+      if (value < 0.01 && value > -0.01) return '    '.padLeft(12);
+      if (value < 0) return red(moneyFormat.format(value).padLeft(12));
       return white(moneyFormat.format(value).padLeft(12), bold: true);
     }
-    // return pad
-    //     ? 12
-    //     : value >= 0
-    //         ? white(moneyFormat.format(value).padLeft(12), bold: true)
-    //         : red(moneyFormat.format(value).padLeft(12));
 
-    if (value.contains('00:00:00.000Z'))
+    if (value.contains('00:00.000Z'))
       return pad
           ? 12
-          : value.replaceRange(10, date.toString().length, '').padRight(12);
+          : value.replaceRange(10, date.toString().length, ' ').padRight(12);
 
     if (value.length > 25)
       return pad

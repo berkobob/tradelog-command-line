@@ -21,7 +21,9 @@ class Dividend extends Command {
           defaultsTo: '')
       ..addFlag('wait',
           abbr: 'w', help: 'Wait for the user input between dividends')
-      ..addFlag('quiet', abbr: 'q', help: 'Only display success. No details');
+      ..addFlag('quiet', abbr: 'q', help: 'Only display success. No details')
+      ..addOption('portfolio',
+          abbr: 'p', help: 'Add dividends to this portfolio');
   }
 
   @override
@@ -34,7 +36,7 @@ class Dividend extends Command {
     }
 
     final data = await load(file == '' ? Dir.fileName : file);
-    final divis = checkPortfolio(data);
+    final divis = checkPortfolio(data, argResults?['portfolio']);
 
     for (Json divi in divis) {
       final body = json.encode(divi);

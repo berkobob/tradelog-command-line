@@ -15,3 +15,5 @@ Sends trades to the Trade Log Server for processing
 + stocks
 + portfolios
 + get [trades | positions | stocks | portfolios]
+
+## Dividend

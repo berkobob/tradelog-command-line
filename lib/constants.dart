@@ -5,10 +5,23 @@ import 'dart:io';
 import 'package:dcli/dcli.dart';
 import 'package:interact/interact.dart';
 import 'package:intl/intl.dart';
+import 'package:yaml/yaml.dart';
 
-const root = 'http://localhost';
-const port = '8888';
+late final root;
+late final port;
 const headers = {'Content-Type': 'application/json'};
+
+Future<void> loadSettings() async {
+  try {
+    final yaml = loadYaml(await File('config.yaml').readAsString());
+    root = yaml?['root'] ?? 'http://itx';
+    port = yaml?['port'] ?? '8888';
+  } catch (_) {
+    print(blue('No config.yaml file found. Using defaults.'));
+    root = 'http://itx';
+    port = '8888';
+  }
+}
 
 enum Url {
   home(''),
